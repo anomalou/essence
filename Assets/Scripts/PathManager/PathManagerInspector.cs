@@ -17,8 +17,7 @@ public class PathManagerInspector : Editor
         pathManager.level = EditorGUILayout.IntField("Level", pathManager.level);
         pathManager.width = EditorGUILayout.IntField("Grid width", pathManager.width);
         pathManager.height = EditorGUILayout.IntField("Grid height", pathManager.height);
-        // pathManager.widthPadding = EditorGUILayout.FloatField("Path node width", pathManager.widthPadding);
-        // pathManager.heightPadding = EditorGUILayout.FloatField("Path node height", pathManager.heightPadding);
+        pathManager.nodeIdent = EditorGUILayout.FloatField("Node ident", pathManager.nodeIdent);
 
         if(GUILayout.Button("Create grid")){
             pathManager.CreateGrid();

@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode]
-public class Node : MonoBehaviour, INode
+[ExecuteInEditMode, Serializable]
+public class Node : MonoBehaviour
 {
     #region Variables
+    [SerializeField]
     private Vector2 _position;
     [HideInInspector]
     public Vector2 position{
@@ -18,41 +20,39 @@ public class Node : MonoBehaviour, INode
     }
 
     [HideInInspector]
+    [SerializeField]
     public bool isWall;
-    private List<GameObject> neighbors;
+    [HideInInspector]
+    [SerializeField]
+    private List<GameObject> _neighbors;
+    public GameObject[] neighbors{
+        get{
+            return _neighbors.ToArray();
+        }
+    }
 
     #endregion
 
     #region InspectorMethods
-    public GameObject[] GetNeighbors()
-    {
-        if(neighbors == null)
-            throw new UnityException("Invalide node!");
-        else
-            return neighbors.ToArray();
-    }
 
     public void AddNeighbor(GameObject neighbor){
-        neighbors.Add(neighbor);
+        if(_neighbors == null)
+            _neighbors = new List<GameObject>();
+        _neighbors.Add(neighbor);
     }
 
-    public void CreateNeighbor(Vector2 position){
-        GameObject node = new GameObject($"Node ({this.position.x + position.x};{this.position.y + position.y})");
-        Node nodeComponent = node.AddComponent<Node>();
-        nodeComponent.Init();
-        nodeComponent.position = this.position + position;
+    public GameObject CreateNeighbor(Vector2 position){
         PathGrid grid = transform.GetComponentInParent<PathGrid>();
-        grid.AddNode(node);
-        node.transform.SetParent(transform.parent);
-        node.transform.localPosition = new Vector3(transform.localPosition.x + position.x, 0, transform.localPosition.y + position.y);
+        GameObject node = PathManager.CreateNode(this.position + position, new Vector2(transform.localPosition.x + position.x * grid.nodeIdent, transform.localPosition.z + position.y * grid.nodeIdent), grid);
         AddNeighbor(node);
-        nodeComponent.AddNeighbor(gameObject);
+        node.GetComponent<Node>().AddNeighbor(gameObject);
+        return node;
     }
 
     public void RemoveNeighbor(GameObject neighbor)
     {
-        if(neighbors.Contains(neighbor))
-            neighbors.Remove(neighbor);
+        if(_neighbors.Contains(neighbor))
+            _neighbors.Remove(neighbor);
     }
 
     private void OnDrawGizmos() {
@@ -63,14 +63,9 @@ public class Node : MonoBehaviour, INode
     }
 
     private void OnDrawGizmosSelected() {
-        foreach(GameObject neighbor in neighbors){
+        foreach(GameObject neighbor in _neighbors){
             Gizmos.DrawLine(transform.position, neighbor.transform.position);
         }
-    }
-
-    public void Init()
-    {
-        neighbors = new List<GameObject>();
     }
 
     void OnDestroy() {
@@ -78,7 +73,7 @@ public class Node : MonoBehaviour, INode
             PathGrid grid = transform.GetComponentInParent<PathGrid>();
             if(grid != null){
                 grid.RemoveNode(gameObject);
-                neighbors.ForEach(T => T.GetComponent<Node>().RemoveNeighbor(gameObject));
+                _neighbors.ForEach(T => T.GetComponent<Node>().RemoveNeighbor(gameObject));
             }
         }else
             return;

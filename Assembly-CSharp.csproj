@@ -36,11 +36,10 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\PathManager\INode.cs" />
-     <Compile Include="Assets\Scripts\PathManager\IPathGrid.cs" />
      <Compile Include="Assets\Scripts\PathManager\Node.cs" />
      <Compile Include="Assets\Scripts\PathManager\NodeInspector.cs" />
      <Compile Include="Assets\Scripts\PathManager\PathGrid.cs" />
+     <Compile Include="Assets\Scripts\PathManager\PathGridInspector.cs" />
      <Compile Include="Assets\Scripts\PathManager\PathManager.cs" />
      <Compile Include="Assets\Scripts\PathManager\PathManagerInspector.cs" />
     <Reference Include="UnityEngine">

@@ -1,10 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class PathGrid : MonoBehaviour, IPathGrid
+[ExecuteInEditMode, Serializable]
+public class PathGrid : MonoBehaviour
 {
     #region Variables
+    [SerializeField]
     private List<GameObject> nodes;
+    public float nodeIdent;
 
     #endregion
 
@@ -20,6 +24,8 @@ public class PathGrid : MonoBehaviour, IPathGrid
     }
 
     public void AddNode(GameObject node){
+        if(nodes == null)
+            nodes = new List<GameObject>();
         nodes.Add(node);
     }
 
@@ -29,13 +35,10 @@ public class PathGrid : MonoBehaviour, IPathGrid
             nodes.Remove(node);
     }
 
-    public void Init()
-    {
-        nodes = new List<GameObject>();
-    }
-
     public void ConnectNodes(){
-        nodes.ForEach((T => {
+        List<GameObject> nodeList = new List<GameObject>();
+        nodeList.AddRange(nodes);
+        nodeList.ForEach((T => {
             Node node = T.GetComponent<Node>();
             GameObject neighbor;
             Vector2 pos = node.position;
